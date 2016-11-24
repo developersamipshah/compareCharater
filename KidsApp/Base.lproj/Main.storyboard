@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="16A323" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <array key="Acme-Regular.ttf">
+            <string>Acme-Regular</string>
+        </array>
+    </customFonts>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="KidsApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
+                        <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="667" height="375"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pJq-qI-PKE" customClass="DrawingView" customModule="KidsApp" customModuleProvider="target">
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
+                            <stackView opaque="NO" contentMode="scaleAspectFit" axis="vertical" distribution="equalCentering" spacing="11" translatesAutoresizingMaskIntoConstraints="NO" id="QRq-R0-4se">
+                                <subviews>
+                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="uhH-TJ-lpa">
+                                        <nil key="textColor"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7v2-1y-ybU">
+                                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                        <fontDescription key="fontDescription" name="Acme-Regular" family="Acme" pointSize="20"/>
+                                        <state key="normal" title="Draw"/>
+                                        <connections>
+                                            <action selector="drawButtonTouched:" destination="BYZ-38-t0r" eventType="touchUpInside" id="fba-n2-HD2"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="160" id="1Hl-XH-CTv"/>
+                                </constraints>
+                            </stackView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Thanks" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8Re-ia-7f7">
+                                <fontDescription key="fontDescription" name="Acme-Regular" family="Acme" pointSize="30"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="0.74117647060000003" green="0.73725490199999999" blue="0.73725490199999999" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="pJq-qI-PKE" secondAttribute="trailing" constant="8" id="0KR-Rq-tlP"/>
+                            <constraint firstItem="8Re-ia-7f7" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="20" id="KO7-Cp-kQA"/>
+                            <constraint firstItem="pJq-qI-PKE" firstAttribute="leading" secondItem="QRq-R0-4se" secondAttribute="trailing" constant="8" id="O4f-Rm-Bjv"/>
+                            <constraint firstItem="pJq-qI-PKE" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="-12" id="Skf-vU-jog"/>
+                            <constraint firstItem="QRq-R0-4se" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="8" id="ZOw-fz-oMd"/>
+                            <constraint firstItem="8Re-ia-7f7" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="20" id="Zoq-pb-CL4"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="pJq-qI-PKE" secondAttribute="bottom" constant="8" id="s5N-xY-FOx"/>
+                            <constraint firstItem="QRq-R0-4se" firstAttribute="centerY" secondItem="pJq-qI-PKE" secondAttribute="centerY" id="taL-Da-lUp"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="drawingView" destination="pJq-qI-PKE" id="Vbe-nb-fyx"/>
+                        <outlet property="exampleLabel" destination="8Re-ia-7f7" id="QyW-0y-LWG"/>
+                        <outlet property="textField" destination="uhH-TJ-lpa" id="3PN-Fw-2a4"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="197" y="36"/>
+        </scene>
+    </scenes>
+</document>

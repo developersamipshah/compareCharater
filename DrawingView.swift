@@ -16,7 +16,7 @@ class DrawingView: UIView {
     var drawingPoints:[CGPoint] = [CGPoint]()
     var timer:Timer?
     
-    var textToDraw:String? = "A"{
+    var textToDraw:String? = "C"{
         didSet{
             setNeedsDisplay()
         }
@@ -42,6 +42,39 @@ class DrawingView: UIView {
         self.isMultipleTouchEnabled = false
         
     }
+//    func newMethod() {
+//        var letters = CGMutablePath()
+//        var font = CTFontCreateWithName("Acme-Regular" as CFString?, 72.0, nil)
+////        var attrs = [kCTFontAttributeName : font ]
+//        
+//        var attrString = NSAttributedString(string: "Hello World!", attributes: [kCTFontAttributeName as String : font])
+//        
+//        var line = CTLineCreateWithAttributedString((attrString as CFAttributedString))
+//        var runArray = CTLineGetGlyphRuns(line)
+//        
+//        // for each RUN
+//        for runIndex in 0..<CFArrayGetCount(runArray) {
+//            // Get FONT for this run
+//            var run = (CFArrayGetValueAtIndex(runArray, runIndex) as! CTRun)
+//            var runFont = CFDictionaryGetValue(CTRunGetAttributes(run), kCTFontAttributeName as String)
+//            // for each GLYPH in run
+//            for runGlyphIndex in 0..<CTRunGetGlyphCount(run) {
+//                // get Glyph & Glyph-data
+//                var thisGlyphRange = CFRangeMake(runGlyphIndex, 1)
+//                var glyph = CGGlyph()
+//                var position = CGPoint.zero
+//                CTRunGetGlyphs(run, thisGlyphRange, glyph)
+//                CTRunGetPositions(run, thisGlyphRange, position)
+//                // Get PATH of outline
+//                var letter = CTFontCreatePathForGlyph(runFont, glyph, nil)
+//                var t = CGAffineTransform(translationX: position.x, y: position.y)
+//                letters.addPath(letter, transform: t)
+//            }
+//        }
+//        var path = UIBezierPath()
+//        path.move(to: CGPoint.zero)
+//        path.append(UIBezierPath(CGPath: letters))
+//    }
     
     override func draw(_ rect: CGRect) {
         super.draw(rect)
@@ -59,7 +92,6 @@ class DrawingView: UIView {
         drawingPath.move(to: location!)
         timer?.invalidate()
         setNeedsDisplay()
-        
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -82,6 +114,16 @@ class DrawingView: UIView {
         setNeedsDisplay()
     }
     
+    func getBiggerFrame(fromPath path: CGPath) -> CGRect {
+        let tmpFrame = path.boundingBox
+        let biggerFrame = CGRect(x: CGFloat(tmpFrame.origin.x - 10 / 2), y: CGFloat(tmpFrame.origin.y - 10 / 2), width: CGFloat(tmpFrame.size.width + 10), height: CGFloat(tmpFrame.size.height + 10))
+        return biggerFrame
+    }
+    
+    func refreshDisplay(withPath path: CGPath) {
+        self.setNeedsDisplay(self.getBiggerFrame(fromPath: path))
+    }
+    
     
     func draw(name:String){
         
@@ -97,12 +139,7 @@ class DrawingView: UIView {
             if gotGlyphs {
                 
                 let cgpath = CTFontCreatePathForGlyph(font, glyphs[0], nil)!
-                
                 let path = UIBezierPath(cgPath: cgpath)
-                
-                let area = path.bounds.width * path.bounds.height
-                print(area)
-                
                 
                 let dashes: [CGFloat] = [path.lineWidth*0, path.lineWidth*2]
                 path.setLineDash(dashes, count: dashes.count, phase: 0)
@@ -115,9 +152,7 @@ class DrawingView: UIView {
                 path.apply(transform)
                 
                 path.stroke()
-                
                 path.fill()
-                
                 
                 lastCharWidth += path.bounds.width
                 originalPath = path
@@ -126,7 +161,13 @@ class DrawingView: UIView {
         }
     }
     
+    
     func compareDrawing(){
+        
+        print(drawingPath.length * 2)
+        print(drawingPath.length * 8)
+        print("Length: \(originalPath?.length)")
+        print("Area: \(originalPath?.area)")
         timer?.invalidate()
         var correct:CGFloat = 0
         var wrong:CGFloat = 0

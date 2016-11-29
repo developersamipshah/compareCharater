@@ -7,16 +7,16 @@
 //
 
 import UIKit
+let BRUSH_WIDTH:CGFloat = 20
 
 class DrawingView: UIView {
     
-    
-    var originalPath:UIBezierPath?
+    var originalPath:UIBezierPath!
     var drawingPath:UIBezierPath!
     var drawingPoints:[CGPoint] = [CGPoint]()
     var timer:Timer?
     
-    var textToDraw:String? = "C"{
+    var textToDraw:String? = "A"{
         didSet{
             setNeedsDisplay()
         }
@@ -36,51 +36,21 @@ class DrawingView: UIView {
         self.backgroundColor = UIColor.lightGray
         
         drawingPath = UIBezierPath()
-        drawingPath.lineWidth = 8
-        drawingPath.lineCapStyle = .round
-        drawingPath.lineJoinStyle = .bevel
+        drawingPath.lineWidth = BRUSH_WIDTH
+        drawingPath.lineCapStyle =  .round
+        drawingPath.lineJoinStyle = .round
         self.isMultipleTouchEnabled = false
         
     }
-//    func newMethod() {
-//        var letters = CGMutablePath()
-//        var font = CTFontCreateWithName("Acme-Regular" as CFString?, 72.0, nil)
-////        var attrs = [kCTFontAttributeName : font ]
-//        
-//        var attrString = NSAttributedString(string: "Hello World!", attributes: [kCTFontAttributeName as String : font])
-//        
-//        var line = CTLineCreateWithAttributedString((attrString as CFAttributedString))
-//        var runArray = CTLineGetGlyphRuns(line)
-//        
-//        // for each RUN
-//        for runIndex in 0..<CFArrayGetCount(runArray) {
-//            // Get FONT for this run
-//            var run = (CFArrayGetValueAtIndex(runArray, runIndex) as! CTRun)
-//            var runFont = CFDictionaryGetValue(CTRunGetAttributes(run), kCTFontAttributeName as String)
-//            // for each GLYPH in run
-//            for runGlyphIndex in 0..<CTRunGetGlyphCount(run) {
-//                // get Glyph & Glyph-data
-//                var thisGlyphRange = CFRangeMake(runGlyphIndex, 1)
-//                var glyph = CGGlyph()
-//                var position = CGPoint.zero
-//                CTRunGetGlyphs(run, thisGlyphRange, glyph)
-//                CTRunGetPositions(run, thisGlyphRange, position)
-//                // Get PATH of outline
-//                var letter = CTFontCreatePathForGlyph(runFont, glyph, nil)
-//                var t = CGAffineTransform(translationX: position.x, y: position.y)
-//                letters.addPath(letter, transform: t)
-//            }
-//        }
-//        var path = UIBezierPath()
-//        path.move(to: CGPoint.zero)
-//        path.append(UIBezierPath(CGPath: letters))
-//    }
     
     override func draw(_ rect: CGRect) {
         super.draw(rect)
         draw(name: textToDraw!)
         UIColor.red.setStroke()
         drawingPath.stroke()
+        
+        let drawingPathBox = UIBezierPath(rect: drawingPath.bounds)
+        drawingPathBox.stroke()
         
         
     }
@@ -106,7 +76,7 @@ class DrawingView: UIView {
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         setNeedsDisplay()
-        timer = Timer.scheduledTimer(timeInterval: 4, target: self, selector: #selector(self.compareDrawing), userInfo: nil, repeats: false)
+        timer = Timer.scheduledTimer(timeInterval: 4, target: self, selector: #selector(self.generateResult), userInfo: nil, repeats: false)
     }
     
     func reset(){
@@ -127,8 +97,9 @@ class DrawingView: UIView {
     
     func draw(name:String){
         
-        let font = UIFont(name: "Acme-Regular", size: 70)!
+        let font = UIFont(name: "Arial", size: BRUSH_WIDTH*15)!
         UIColor.white.setStroke()
+        
         var lastCharWidth:CGFloat = 0
         
         for char in name.characters{
@@ -141,63 +112,73 @@ class DrawingView: UIView {
                 let cgpath = CTFontCreatePathForGlyph(font, glyphs[0], nil)!
                 let path = UIBezierPath(cgPath: cgpath)
                 
-                let dashes: [CGFloat] = [path.lineWidth*0, path.lineWidth*2]
+                let dashes: [CGFloat] = [path.lineWidth*0, path.lineWidth*8]
                 path.setLineDash(dashes, count: dashes.count, phase: 0)
                 path.lineCapStyle = CGLineCap.round
-                path.lineWidth = 2
+                path.lineWidth = 4
                 
                 let transform = CGAffineTransform(scaleX: 1.0, y: -1.0)
-                let translate = CGAffineTransform(translationX: lastCharWidth, y: -100)
+                let translate = CGAffineTransform(translationX: lastCharWidth, y: -self.frame.width/2)
                 path.apply(translate)
                 path.apply(transform)
                 
                 path.stroke()
-                path.fill()
                 
                 lastCharWidth += path.bounds.width
                 originalPath = path
+                
+                
+                let anotherPath = UIBezierPath(rect: (originalPath?.bounds)!)
+                anotherPath.stroke()
                 
             }
         }
     }
     
     
-    func compareDrawing(){
+    func generateResult(){
         
-        print(drawingPath.length * 2)
-        print(drawingPath.length * 8)
-        print("Length: \(originalPath?.length)")
-        print("Area: \(originalPath?.area)")
+        // Started Checking result so terminate timer
         timer?.invalidate()
-        var correct:CGFloat = 0
-        var wrong:CGFloat = 0
         
-//        originalPath?.fill()
+        // Bounding Box Check
+        let originalBoundingBox = originalPath.bounds
+        let drawingBoundingBox = drawingPath.bounds
+        
+        let widthCorrectness = (drawingBoundingBox.width + BRUSH_WIDTH)/originalBoundingBox.width
+        let heightCorrectness = (drawingBoundingBox.height + BRUSH_WIDTH)/originalBoundingBox.height
+        
+        // Perimeter Check
+        let noOFEdges:CGFloat = CGFloat(2)
+        let drawingPerimeter = 2*drawingPath.length+noOFEdges*BRUSH_WIDTH
+        let orginalPerimeter = originalPath.length
+        let perimeterCorrectness = drawingPerimeter/orginalPerimeter
+        
+        // Area Check
+        let drawingArea = drawingPath.length*BRUSH_WIDTH
+        let originalArea = originalPath.area
+        
+        let areaCorrectness = drawingArea/originalArea
+        
+        // Points Check        
+        var correct:CGFloat = 0
         
         for point in drawingPoints{
-            if  (originalPath?.contains(point))!{
+            if (originalPath?.contains(point))!{
                 correct += 1
-            }else{
-                wrong += 1
             }
         }
         
-        if correct > 0{
-            print(correct/CGFloat(drawingPoints.count))
-            let percentageCorrect:CGFloat = (correct / CGFloat(drawingPoints.count) ) * 100
-            switch percentageCorrect {
-            case 80...100:
-                print("Excellent")
-                
-            case 60...79:
-                print("Good")
-                
-            default:
-                print("Do it again")
-            }
-        }else{
-            print("Do it again")
-        }
+        let containsPointCorrectness = correct/CGFloat(drawingPoints.count)
+        
+        
+        // Overall Result Calculation
+        
+        print("Width Correctness = 0.%2f %.",widthCorrectness*100)
+        print("Height Correctness = 0.%2f %.",heightCorrectness*100)
+        print("Perimeter Correctness = 0.%2f %.",perimeterCorrectness*100)
+        print("Area Correctness = 0.%2f %.",areaCorrectness*100)
+        print("Contains Point Correctness = 0.%2f %.",containsPointCorrectness*100)
         
     }
 }

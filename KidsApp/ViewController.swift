@@ -28,39 +28,7 @@ class ViewController: UIViewController {
         print(textField.text)
         drawingView.textToDraw = textField.text
         drawingView.reset()
-//        setupDrawing()
-    }
-    
-    func setupDrawing(){
-        let font = UIFont(name: "Acme-Regular", size: 60)
-        let fontPath = Bundle.main.path(forResource: "Acme-Regular", ofType: "ttf")
-        
-        do{
-            let fontData:CFData = try NSData(contentsOfFile: fontPath!)
-            print(fontData)
-            let error :UnsafeMutablePointer<Unmanaged<CFError>?>? = nil
-            let provider:CGDataProvider = CGDataProvider(data: fontData)!
-            
-            let customFont = CGFont.init(provider)
-            
-            let registered = CTFontManagerRegisterGraphicsFont(customFont, error)
-            
-            if !registered{
-                print("Failed to load custom font")
-            }
-            
-            let name = "Samip"
-            let font  = CTFontCreateWithName("Acme-Regular" as CFString?, 60, nil)
-            let count = name.characters.count
-            
-            var glyphs = Array<CGGlyph>(repeating: 0, count: count)
-            var chars = [UniChar]()
-        }catch {
-            print("error")
-            return
-        }
-        
-        
+
     }
     
     
